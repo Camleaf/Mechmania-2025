@@ -76,8 +76,12 @@ void loop() {
   } else {
     turnForce = 0;
   }
-
-  maximum = max(accelForce, turnForce);
+  // accelf = -255
+  // turnf = 0
+  // maximum = 0
+  // diff = -255
+  // total = -255
+  maximum = max(abs(accelForce), abs(turnForce));
   difference = accelForce - turnForce;
   total = accelForce + turnForce;
 
