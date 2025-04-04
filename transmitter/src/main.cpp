@@ -4,6 +4,18 @@
 #include <RF24.h>
 
 // put function declarations here:
+#define LjoyX A0
+#define LjoyY A1
+#define RjoyX A2
+#define RjoyY A3
+
+#define ControlDeadZone 20
+
+
+int rawAccelForce = 512;
+int rawTurnForce = 512;
+int accelForce = 0;
+int direction = 0;
 
 RF24 radio(9,10);// CE, CSN
 
@@ -19,6 +31,38 @@ void setup() {
 }
 
 void loop() {
+
+  //tank drive
+  
+
+  rawAccelForce = analogRead(LjoyY);
+  rawTurnForce = analogRead(RjoyX);
+  // read raw values
+
+  // the anolog controller works on a scale of 0 - 1023 where ~ 512 is centered
+  if (!(512 - ControlDeadZone < rawAccelForce && 512 + ControlDeadZone > rawAccelForce)){ // check for control deadzones
+    if (rawAccelForce > 511){
+      direction = 0; // direction 0 means forward, 1 means backward
+    } else {
+      direction = 1;
+    }
+
+    accelForce = round((rawAccelForce % 512) / 5.12);
+
+  } else {
+    accelForce = 0; // if stick is in deadzone no movement
+  }
+
+  if (!(512 - ControlDeadZone < rawTurnForce && 512 + ControlDeadZone > rawTurnForce)) { //check for control deadzones
+    // turn
+    // handle all rotation calculations here to deal with less strain on actual motor controller
+    
+
+  }
+
+
+
+
   const char text[] = "Hello World";
   radio.write(&text, sizeof(text));
   delay(1000);
