@@ -73,6 +73,8 @@ void loop() {
     } else {
       turnForce = -round(((rawTurnForce % 512) / 512) * 255);
     }
+  } else {
+    turnForce = 0;
   }
 
   maximum = max(accelForce, turnForce);
