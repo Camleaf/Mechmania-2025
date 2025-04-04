@@ -6,8 +6,10 @@
 
 #define RightSideAnalog 6
 #define LeftSideAnalog 5
-#define RightSideDir 4
-#define LeftSideDir 3
+#define RsDir1 4
+#define RsDir2 3
+#define LsDir1 2
+#define LSDir2 1
 
 
 int Ldir = 0;
@@ -49,16 +51,20 @@ void loop() {
 
   // add a bit of comprehension just to split tasks between controller and car
   if (dataPackage.Lspeed < 0){ //just fixing up how output was given by other thing
-    digitalWrite(RightSideDir, HIGH);
+    digitalWrite(LsDir1, HIGH);
+    digitalWrite(LsDir1, LOW);
     dataPackage.Lspeed *= -1;
   } else {
-    digitalWrite(LeftSideDir, LOW);
+    digitalWrite(LsDir1, LOW);
+    digitalWrite(LsDir1, HIGH);
   }
   if (dataPackage.Rspeed < 0) { // fix up rspeed
-    digitalWrite(RightSideDir, HIGH);
+    digitalWrite(RsDir1, HIGH);
+    digitalWrite(RsDir1, LOW);
     dataPackage.Rspeed *= -1;
   } else {
-    digitalWrite(RightSideDir, LOW);
+    digitalWrite(RsDir1, LOW);
+    digitalWrite(RsDir1, HIGH);
   }
 
   analogWrite(RightSideAnalog, dataPackage.Rspeed);
