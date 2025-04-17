@@ -54,11 +54,13 @@ void loop() {
   // read raw values
 
   // the anolog controller works on a scale of 0 - 1023 where ~ 512 is centered
+  
   if (!(512 - ControlDeadZone < rawAccelForce && 512 + ControlDeadZone > rawAccelForce)){ // check for control deadzones
-    if (rawAccelForce > 511){
-      accelForce = round(((rawAccelForce % 512) / 512)  * 255);
+    // this almost works just the entry condition only works for up not down
+    if (rawAccelForce < 511){
+      accelForce = round(((512-rawAccelForce) / 512)  * 255);
     } else {
-      accelForce = -round(((rawAccelForce % 512) / 512) * 255 );
+      accelForce = -round(((rawAccelForce - 512) / 512) * 255 );
     }
 
   } else {
@@ -68,10 +70,10 @@ void loop() {
   if (!(512 - ControlDeadZone < rawTurnForce && 512 + ControlDeadZone > rawTurnForce)) { //check for control deadzones
     // turn
     // handle all rotation calculations here to deal with less strain on actual motor controller
-    if (rawTurnForce > 511){
-      turnForce = round(((rawTurnForce % 512) / 512) * 255);
+    if (rawTurnForce < 511){
+      turnForce = round(((512-rawTurnForce) / 512) * 255);
     } else {
-      turnForce = -round(((rawTurnForce % 512) / 512) * 255);
+      turnForce = -round(((rawTurnForce - 512) / 512) * 255);
     }
   } else {
     turnForce = 0;
@@ -99,7 +101,10 @@ void loop() {
     } 
   }
 
-
+  Serial.print(rawAccelForce);
+  Serial.print('\n');
+  Serial.print(accelForce);
+  Serial.print('\n');
   radio.write(&dataPackage, sizeof(dataPackage));
-  delay(5);
+  delay(1000);
 }
