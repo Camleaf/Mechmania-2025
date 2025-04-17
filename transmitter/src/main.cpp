@@ -6,10 +6,10 @@
 using namespace std;
 
 // put function declarations here:
-#define LjoyX A0
-#define LjoyY A1
-#define RjoyX A2
-#define RjoyY A3
+#define RjoyX A0
+#define RjoyY A1
+#define LjoyX A2
+#define LjoyY A3
 
 #define ControlDeadZone 20
 

@@ -4,12 +4,12 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-#define RightSideAnalog 6
-#define LeftSideAnalog 5
-#define RsDir1 4
-#define RsDir2 3
-#define LsDir1 2
-#define LSDir2 1
+#define RightSideAnalog 5
+#define LeftSideAnalog 4
+#define RsDir1 8
+#define RsDir2 7
+#define LsDir1 6
+#define LSDir2 5
 
 
 int Ldir = 0;
