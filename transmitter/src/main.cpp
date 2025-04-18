@@ -9,7 +9,7 @@ using namespace std;
 #define RjoyX A0
 #define RjoyY A1
 #define LjoyX A2
-#define LjoyY A3
+#define LjoyY A3 // check if these are switched at all and in wrong spots
 
 #define ControlDeadZone 20
 
@@ -31,9 +31,9 @@ SpeedStruct;
 SpeedStruct dataPackage; // using struct to package data to send to other arduino
 
 
-RF24 radio(9,10);// CE, CSN
+RF24 radio(9,10);// CE, CSN Check that these pins are in the right place
 
-const byte address[6] = "11001";
+const byte address[6] = "00001";
 
 void setup() {
   Serial.begin(9600);

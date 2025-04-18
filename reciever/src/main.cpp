@@ -24,9 +24,9 @@ SpeedStruct dataPackage;
 
 
 
-RF24 radio(9,10); // CE, CSN
+RF24 radio(9,10); // CE, CSN check that these pins are in the right place
 
-const byte address[6] = "11001";
+const byte address[6] = "0001";
 
 void setup() {
   // pinmodes
