@@ -9,7 +9,7 @@
 #define RsDir1 8
 #define RsDir2 7
 #define LsDir1 6
-#define LSDir2 5
+#define LsDir2 5
 
 
 int Ldir = 0;
@@ -33,6 +33,11 @@ void setup() {
 
   pinMode(9,  OUTPUT); 
   pinMode(10, OUTPUT);
+
+  pinMode(LsDir1, OUTPUT);
+  pinMode(RsDir1, OUTPUT);
+  pinMode(RsDir2, OUTPUT);
+  pinMode(LsDir2, OUTPUT);
   // end pinmodes
 
   Serial.begin(9600);
@@ -52,25 +57,24 @@ void loop() {
   // add a bit of comprehension just to split tasks between controller and car
   if (dataPackage.Lspeed < 0){ //just fixing up how output was given by other thing
     digitalWrite(LsDir1, HIGH);
-    digitalWrite(LsDir1, LOW);
+    digitalWrite(LsDir2, LOW);
     dataPackage.Lspeed *= -1;
   } else {
     digitalWrite(LsDir1, LOW);
-    digitalWrite(LsDir1, HIGH);
+    digitalWrite(LsDir2, HIGH);
   }
   if (dataPackage.Rspeed < 0) { // fix up rspeed
     digitalWrite(RsDir1, HIGH);
-    digitalWrite(RsDir1, LOW);
+    digitalWrite(RsDir2, LOW);
     dataPackage.Rspeed *= -1;
   } else {
     digitalWrite(RsDir1, LOW);
-    digitalWrite(RsDir1, HIGH);
+    digitalWrite(RsDir2, HIGH);
   }
 
   analogWrite(RightSideAnalog, dataPackage.Rspeed);
   analogWrite(LeftSideAnalog, dataPackage.Lspeed);
 
-  delay(2);
 
   
 }

@@ -8,16 +8,16 @@ using namespace std;
 // put function declarations here:
 #define RjoyX A0
 #define RjoyY A1
-#define LjoyX A2
-#define LjoyY A3 // check if these are switched at all and in wrong spots
+#define LjoyX A3
+#define LjoyY A2 // check if these are switched at all and in wrong spots
 
 #define ControlDeadZone 20
 
 
 int rawAccelForce = 512;
 int rawTurnForce = 512;
-int accelForce = 0;
-int turnForce = 0;
+long accelForce = 0;
+long turnForce = 0;
 int maximum = 0;
 int difference = 0;
 int total = 0;
@@ -47,38 +47,53 @@ void setup() {
 void loop() {
 
   //tank drive
-  
+ 
 
-  rawAccelForce = analogRead(LjoyY);
-  rawTurnForce = analogRead(RjoyX);
+  rawAccelForce = analogRead(LjoyX);
+  rawTurnForce = analogRead(RjoyY);
   // read raw values
 
   // the anolog controller works on a scale of 0 - 1023 where ~ 512 is centered
-  
+  accelForce = 0; // if stick is in deadzone no movement
   if (!(512 - ControlDeadZone < rawAccelForce && 512 + ControlDeadZone > rawAccelForce)){ // check for control deadzones
     // this almost works just the entry condition only works for up not down
+    Serial.print("working");
+    // handle all rotation calculations here to deal with less strain on actual motor controller
     if (rawAccelForce < 511){
-      accelForce = round(((512-rawAccelForce) / 512)  * 255);
+      Serial.print("small");
+      accelForce= 512-rawAccelForce;
+      accelForce = (accelForce*100) / 512;
+      accelForce = accelForce * 255;
+      accelForce = round(accelForce/100);
     } else {
-      accelForce = -round(((rawAccelForce - 512) / 512) * 255 );
+      accelForce = rawAccelForce - 512;
+      Serial.print(accelForce);
+      accelForce = (accelForce*100) / 512;
+      accelForce= accelForce * 255;
+      accelForce= -round(accelForce/100);
+     
     }
 
-  } else {
-    accelForce = 0; // if stick is in deadzone no movement
   }
-
+  turnForce = 0;
+ 
   if (!(512 - ControlDeadZone < rawTurnForce && 512 + ControlDeadZone > rawTurnForce)) { //check for control deadzones
     // turn
+    Serial.print("working");
     // handle all rotation calculations here to deal with less strain on actual motor controller
     if (rawTurnForce < 511){
-      turnForce = round(((512-rawTurnForce) / 512) * 255);
+      turnForce = 512-rawTurnForce;
+      turnForce = (turnForce*100) / 512;
+      turnForce = turnForce * 255;
+      turnForce = round(turnForce/100);
     } else {
-      turnForce = -round(((rawTurnForce - 512) / 512) * 255);
+      turnForce = rawTurnForce - 512;
+      turnForce = (turnForce*100) / 512;
+      turnForce = turnForce * 255;
+      turnForce = -round(turnForce/100);
     }
-  } else {
-    turnForce = 0;
   }
-  
+ 
   maximum = max(abs(accelForce), abs(turnForce));
   difference = accelForce - turnForce;
   total = accelForce + turnForce;
@@ -98,7 +113,7 @@ void loop() {
     } else { // Joystick bottom left
       dataPackage.Lspeed = -maximum;
       dataPackage.Rspeed = difference;
-    } 
+    }
   }
 
   Serial.print(rawAccelForce);
