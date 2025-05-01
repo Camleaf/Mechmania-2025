@@ -23,24 +23,24 @@ int difference = 0;
 int total = 0;
 
 typedef struct{
-  int Rspeed;
-  int Lspeed;
-}
-SpeedStruct;
+  int16_t Rspeed;
+  int16_t Lspeed;
+}__attribute__((packed)) SpeedStruct;
 
 SpeedStruct dataPackage; // using struct to package data to send to other arduino
 
 
-RF24 radio(9,10);// CE, CSN Check that these pins are in the right place
+RF24 radio(1,2);// CE, CSN CHANGE THESE PINS
 
-const byte address[6] = "00001";
+const byte address[5] = "0110";
 
 void setup() {
   Serial.begin(9600);
   Serial.write("Transmitting");
   radio.begin();
+  // check return for radio.begin for both modules to check wiring and power. Also add u10 capacitor near power pins for both
   radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_MIN);
+  radio.setPALevel(-12);
   radio.stopListening();
 }
 
@@ -57,10 +57,8 @@ void loop() {
   accelForce = 0; // if stick is in deadzone no movement
   if (!(512 - ControlDeadZone < rawAccelForce && 512 + ControlDeadZone > rawAccelForce)){ // check for control deadzones
     // this almost works just the entry condition only works for up not down
-    Serial.print("working");
     // handle all rotation calculations here to deal with less strain on actual motor controller
     if (rawAccelForce < 511){
-      Serial.print("small");
       accelForce= 512-rawAccelForce;
       accelForce = (accelForce*100) / 512;
       accelForce = accelForce * 255;
@@ -79,7 +77,6 @@ void loop() {
  
   if (!(512 - ControlDeadZone < rawTurnForce && 512 + ControlDeadZone > rawTurnForce)) { //check for control deadzones
     // turn
-    Serial.print("working");
     // handle all rotation calculations here to deal with less strain on actual motor controller
     if (rawTurnForce < 511){
       turnForce = 512-rawTurnForce;
@@ -115,11 +112,17 @@ void loop() {
       dataPackage.Rspeed = difference;
     }
   }
+  Serial.print('\n');
+  Serial.print('\n');
+  Serial.print('\n');
+  Serial.print("data LeftSpeed= ");
+  Serial.print(dataPackage.Lspeed);
+  Serial.print('\n');
+  Serial.print("data RightSpeed= ");
+  Serial.print(dataPackage.Rspeed);
 
-  Serial.print(rawAccelForce);
-  Serial.print('\n');
-  Serial.print(accelForce);
-  Serial.print('\n');
-  radio.write(&dataPackage, sizeof(dataPackage));
-  delay(1000);
+
+  radio.write(&dataPackage, sizeof(SpeedStruct));
+  
+  delay(10);
 }

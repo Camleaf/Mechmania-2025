@@ -4,7 +4,7 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-#define RightSideAnalog 5
+#define RightSideAnalog 5 // check if this and LSDir actually overwrite or wtf happened here
 #define LeftSideAnalog 4
 #define RsDir1 8
 #define RsDir2 7
@@ -15,18 +15,17 @@
 int Ldir = 0;
 int Rdir = 0;
 typedef struct{
-  int Rspeed = 0;
-  int Lspeed = 0;
-}
-SpeedStruct;
+  int16_t Rspeed;
+  int16_t Lspeed;
+}__attribute__((packed)) SpeedStruct;
 
 SpeedStruct dataPackage;
 
 
 
-RF24 radio(9,10); // CE, CSN check that these pins are in the right place
+RF24 radio(1,2); // CE, CSN CHANGE THESE PINS
 
-const byte address[6] = "0001";
+const byte address[5] = "0110";
 
 void setup() {
   // pinmodes
@@ -43,15 +42,23 @@ void setup() {
   Serial.begin(9600); 
   Serial.write("Listening");
   radio.begin();
+  // check return for radio.begin for both modules
   radio.openReadingPipe(0, address);
-  radio.setPALevel(RF24_PA_MIN);
+  radio.setPALevel(-12);
   radio.startListening();
 }
 
 void loop() {
   while (!radio.available());
-  radio.read( &dataPackage, sizeof(dataPackage) );
-
+  radio.read( &dataPackage, sizeof(SpeedStruct) ); // reminder to add u10 capacitor near power
+  Serial.print("\n");
+  Serial.print("\n");
+  Serial.print("Recieved");
+  Serial.print("data.RightSpeed= ");
+  Serial.print(dataPackage.Rspeed);
+  Serial.print("\n");
+  Serial.print("data.LeftSpeed= ");
+  Serial.print(dataPackage.Lspeed);
 
   // add a bit of comprehension just to split tasks between controller and car
   if (dataPackage.Lspeed < 0){ //just fixing up how output was given by other thing
