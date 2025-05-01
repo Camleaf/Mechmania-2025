@@ -36,12 +36,34 @@ const byte address[5] = "0110";
 
 void setup() {
   Serial.begin(9600);
-  Serial.write("Transmitting");
   radio.begin();
   // check return for radio.begin for both modules to check wiring and power. Also add u10 capacitor near power pins for both
   radio.openWritingPipe(address);
   radio.setPALevel(-12);
   radio.stopListening();
+
+
+  // Establish connection with reciever
+  char text[11] = "Initialize";
+  radio.write(text, sizeof(text));
+  radio.startListening();
+  Serial.print("Initialized pipe, waiting for response");
+  // now wait for the response. This could help a lot with debugging
+  unsigned long started_waiting_at = millis();
+  int waiting = 0;
+  while (!(radio.available())){ // Wait for response
+    if ((millis()-started_waiting_at) % 1000 == 0){
+      Serial.print("Waiting: ");
+      Serial.print(waiting);
+      Serial.print("\n");
+    }
+  };
+  // Once reponse is given add to serial monitor
+  char text[22] = "";
+  radio.read(&text,sizeof(text));
+  Serial.print(text);
+  radio.stopListening();
+  Serial.write("Transmitting");
 }
 
 void loop() {

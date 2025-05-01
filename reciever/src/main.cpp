@@ -40,12 +40,24 @@ void setup() {
   // end pinmodes
 
   Serial.begin(9600); 
-  Serial.write("Listening");
   radio.begin();
   // check return for radio.begin for both modules
   radio.openReadingPipe(0, address);
   radio.setPALevel(-12);
   radio.startListening();
+
+  // Establish connection with transmitter
+  while (!(radio.available()));
+  char text[11] = "";
+  radio.read(&text, sizeof(text));
+  radio.stopListening();
+
+  // Once init command is given return a response
+  char text[22] = "Connection Confirmed";
+  radio.write(&text,sizeof(text));
+  radio.startListening();
+  Serial.write("Listening");
+
 }
 
 void loop() {
