@@ -40,7 +40,7 @@ void setup() {
   pinMode(LsDir2, OUTPUT);
   // end pinmodes
 
-  Serial.begin(9600);
+  Serial.begin(9600); 
   Serial.write("Listening");
   radio.begin();
   radio.openReadingPipe(0, address);
@@ -49,10 +49,9 @@ void setup() {
 }
 
 void loop() {
-  if ( radio.available() )
-  {
-    radio.read( &dataPackage, sizeof(dataPackage) );
-  }
+  while (!radio.available());
+  radio.read( &dataPackage, sizeof(dataPackage) );
+
 
   // add a bit of comprehension just to split tasks between controller and car
   if (dataPackage.Lspeed < 0){ //just fixing up how output was given by other thing
