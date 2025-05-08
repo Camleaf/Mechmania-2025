@@ -39,29 +39,15 @@ void setup() {
   radio.begin();
   // check return for radio.begin for both modules to check wiring and power. Also add u10 capacitor near power pins for both
   radio.openWritingPipe(address);
-  radio.setPALevel(-12);
+  radio.setPALevel(-18);
   radio.stopListening();
 
 
   // Establish connection with reciever
-  char text[11] = "Initialize";
+  char text[22] = "Initialize";
   radio.write(text, sizeof(text));
   radio.startListening();
   Serial.print("Initialized pipe, waiting for response");
-  // now wait for the response. This could help a lot with debugging
-  unsigned long started_waiting_at = millis();
-  int waiting = 0;
-  while (!(radio.available())){ // Wait for response
-    if ((millis()-started_waiting_at) % 1000 == 0){
-      Serial.print("Waiting: ");
-      Serial.print(waiting);
-      Serial.print("\n");
-    }
-  };
-  // Once reponse is given add to serial monitor
-  char text[22] = "";
-  radio.read(&text,sizeof(text));
-  Serial.print(text);
   radio.stopListening();
   Serial.write("Transmitting");
 }
@@ -87,7 +73,6 @@ void loop() {
       accelForce = round(accelForce/100);
     } else {
       accelForce = rawAccelForce - 512;
-      Serial.print(accelForce);
       accelForce = (accelForce*100) / 512;
       accelForce= accelForce * 255;
       accelForce= -round(accelForce/100);
@@ -134,14 +119,14 @@ void loop() {
       dataPackage.Rspeed = difference;
     }
   }
-  Serial.print('\n');
-  Serial.print('\n');
-  Serial.print('\n');
-  Serial.print("data LeftSpeed= ");
-  Serial.print(dataPackage.Lspeed);
-  Serial.print('\n');
-  Serial.print("data RightSpeed= ");
-  Serial.print(dataPackage.Rspeed);
+  // Serial.print('\n');
+  // Serial.print('\n');
+  // Serial.print('\n');
+  // Serial.print("data LeftSpeed= ");
+  // Serial.print(dataPackage.Lspeed);
+  // Serial.print('\n');
+  // Serial.print("data RightSpeed= ");
+  // Serial.print(dataPackage.Rspeed);
 
 
   radio.write(&dataPackage, sizeof(SpeedStruct));
