@@ -61,6 +61,7 @@ void loop() {
   rawTurnForce = analogRead(RjoyY);
   // read raw values
 
+
   // the anolog controller works on a scale of 0 - 1023 where ~ 512 is centered
   accelForce = 0; // if stick is in deadzone no movement
   if (!(512 - ControlDeadZone < rawAccelForce && 512 + ControlDeadZone > rawAccelForce)){ // check for control deadzones
