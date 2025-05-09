@@ -57,8 +57,8 @@ void loop() {
   //tank drive
  
 
-  rawAccelForce = analogRead(LjoyX);
-  rawTurnForce = analogRead(RjoyY);
+  rawAccelForce = analogRead(RjoyY);
+  rawTurnForce = analogRead(LjoyX);
   // read raw values
 
 
