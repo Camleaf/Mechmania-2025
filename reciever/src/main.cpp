@@ -3,6 +3,8 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <printf.h>
+#include <RF24_config.h>
 
 #define RightSideAnalog 3 // check if this and LSDir actually overwrite or wtf happened here
 #define LeftSideAnalog 4
@@ -23,16 +25,18 @@ SpeedStruct dataPackage;
 
 
 
-RF24 radio(1,2); // CE, CSN CHANGE THESE PINS
+RF24 radio(9,10); // CE, CSN CHANGE THESE PINS
 
 const byte address[5] = "0110";
 
 void setup() {
   // pinmodes
+  printf_begin();
 
   pinMode(1,  OUTPUT); 
   pinMode(2, OUTPUT);
-
+  pinMode(9,  OUTPUT); 
+  pinMode(10, OUTPUT);
   pinMode(LsDir1, OUTPUT);
   pinMode(RsDir1, OUTPUT);
   pinMode(RsDir2, OUTPUT);
@@ -40,14 +44,15 @@ void setup() {
   // end pinmodes
 
   Serial.begin(9600); 
-  radio.begin();
+  if (!radio.begin()) { Serial.println(F("radio hardware not responding!"));}
   // check return for radio.begin for both modules
   radio.openReadingPipe(0, address);
   radio.setPALevel(-18);
   radio.startListening();
-
+  
+  // radio.printDetails();
   // Establish connection with transmitter
-  while (!(radio.available()));
+  while (!(radio.available())) {}
   char text[22] = "";
   radio.read(&text, sizeof(text));
   radio.stopListening();
@@ -64,38 +69,38 @@ void loop() {
   radio.read( &dataPackage, sizeof(SpeedStruct) ); // reminder to add u10 capacitor near power
   Serial.print("\n");
   Serial.print("\n");
-  // Serial.print("Recieved");
-  // Serial.print("data.RightSpeed= ");
-  // Serial.print(dataPackage.Rspeed);
-  // Serial.print("\n");
-  // Serial.print("data.LeftSpeed= ");
-  // Serial.print(dataPackage.Lspeed);
+  Serial.print("Recieved");
+  Serial.print("data.RightSpeed= ");
+  Serial.print(dataPackage.Rspeed);
+  Serial.print("\n");
+  Serial.print("data.LeftSpeed= ");
+  Serial.print(dataPackage.Lspeed);
 
   // add a bit of comprehension just to split tasks between controller and car
   if (dataPackage.Lspeed < 0){ //just fixing up how output was given by other thing
-    digitalWrite(LsDir1, HIGH);
     digitalWrite(LsDir2, LOW);
+    digitalWrite(LsDir1, HIGH);
     dataPackage.Lspeed *= -1;
-    Serial.print("\n");
-    Serial.print("LeftDown");
+    // Serial.print("\n");
+    // Serial.print("LeftDown");
 
   } else {
     digitalWrite(LsDir1, LOW);
     digitalWrite(LsDir2, HIGH);
-    Serial.print("\n");
-    Serial.print("LeftUp");
+    // Serial.print("\n");
+    // Serial.print("LeftUp");
   }
   if (dataPackage.Rspeed < 0) { // fix up rspeed
-    digitalWrite(RsDir1, HIGH);
-    digitalWrite(RsDir2, LOW);
-    dataPackage.Rspeed *= -1;
-    Serial.print("\n");
-    Serial.print("RightDown");
-  } else {
     digitalWrite(RsDir1, LOW);
     digitalWrite(RsDir2, HIGH);
-    Serial.print("\n");
-    Serial.print("RightUp");
+    dataPackage.Rspeed *= -1;
+    // Serial.print("\n");
+    // Serial.print("RightDown");
+  } else {
+    digitalWrite(RsDir1, HIGH);
+    digitalWrite(RsDir2, LOW);
+    // Serial.print("\n");
+    // Serial.print("RightUp");
   }
 
   analogWrite(RightSideAnalog, dataPackage.Rspeed);
