@@ -123,7 +123,7 @@ void loop() {
     } else { // Joystick bottom left
       dataPackage.Lspeed = -maximum;
       dataPackage.Rspeed = difference;
-    }
+    }//
   }
   Serial.print('\n');
   Serial.print('\n');
